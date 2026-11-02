@@ -1,0 +1,121 @@
+{
+  "competitions": [
+    {
+      "id": "10_enveda-casmi26-molecule-id-mass-spectra",
+      "name": "CASMI26",
+      "points": [
+        {
+          "date": "2026-10-31T17:30+09:00",
+          "rank": 1294,
+          "score": 0.456
+        },
+        {
+          "date": "2026-11-02T09:46+09:00",
+          "rank": 1415,
+          "score": 0.456
+        },
+        {
+          "date": "2026-11-02T20:32+09:00",
+          "rank": 1434,
+          "score": 0.456
+        }
+      ],
+      "slug": "enveda-CASMI26-molecule-id-mass-spectra",
+      "teams_latest": 4540
+    },
+    {
+      "id": "11_google-verifiable-quantum-circuit-compilation",
+      "name": "QCC",
+      "points": [
+        {
+          "date": "2026-10-31T17:30+09:00",
+          "rank": 1241,
+          "score": 11.12982
+        },
+        {
+          "date": "2026-10-31T18:37+09:00",
+          "rank": 155,
+          "score": 23.26222
+        },
+        {
+          "date": "2026-11-01T08:16+09:00",
+          "rank": 330,
+          "score": 23.36182
+        },
+        {
+          "date": "2026-11-01T16:02+09:00",
+          "rank": 109,
+          "score": 23.81128
+        },
+        {
+          "date": "2026-11-02T09:46+09:00",
+          "rank": 309,
+          "score": 23.83512
+        },
+        {
+          "date": "2026-11-02T20:32+09:00",
+          "rank": 381,
+          "score": 23.9468
+        }
+      ],
+      "slug": "google-verifiable-quantum-circuit-compilation",
+      "teams_latest": 1962
+    },
+    {
+      "id": "03_name-that-llm",
+      "name": "Name That LLM",
+      "points": [
+        {
+          "date": "2026-10-31T17:30+09:00",
+          "rank": 1621,
+          "score": 0.594
+        },
+        {
+          "date": "2026-11-02T09:46+09:00",
+          "rank": 1806,
+          "score": 0.594
+        },
+        {
+          "date": "2026-11-02T20:32+09:00",
+          "rank": 1833,
+          "score": 0.594
+        }
+      ],
+      "slug": "name-that-llm",
+      "teams_latest": 4225
+    },
+    {
+      "id": "gemma-4-developer-agent",
+      "name": "Gemma 4",
+      "points": [],
+      "slug": "gemma-4-developer-agent",
+      "teams_latest": 4400
+    },
+    {
+      "badge": "終了",
+      "id": "05_arc-prize-2026-arc-agi-2",
+      "name": "ARC-AGI-2",
+      "points": [
+        {
+          "date": "2026-10-31T17:30+09:00",
+          "rank": 1457,
+          "score": 30.14
+        },
+        {
+          "date": "2026-11-02T09:46+09:00",
+          "rank": 1491,
+          "score": 30.14
+        },
+        {
+          "date": "2026-11-02T20:32+09:00",
+          "rank": 1510,
+          "score": 30.14
+        }
+      ],
+      "slug": "arc-prize-2026-arc-agi-2",
+      "teams_latest": 3607
+    }
+  ],
+  "note": "Measured rank/score history for official-medal competitions only. Every point comes from a dated record (weekly snapshots in ~/workspace/rankings/, QCC WORKLOG, Kaggle API submission lists, 2026-11-02 evening API measurement). No interpolated or estimated points. score is the team's best public score as of that point; null when not yet scored.",
+  "schema_version": 1
+}
