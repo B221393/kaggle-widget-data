@@ -2,7 +2,6 @@
   "competitions": [
     {
       "deadline": "2026-12-14T23:59:00Z",
-      "focus": true,
       "id": "10_enveda-casmi26-molecule-id-mass-spectra",
       "name": "CASMI26",
       "order": 1,
@@ -133,5 +132,11 @@
     }
   ],
   "note": "Measured rank/score history for official-medal competitions only. Every point comes from a dated record (weekly snapshots in ~/workspace/rankings/, QCC WORKLOG, Kaggle API submission lists, 2026-11-02 evening API measurement). No interpolated or estimated points. score is the team's best public score as of that point; null when not yet scored.",
+  "priority_order": [
+    "10_enveda-casmi26-molecule-id-mass-spectra",
+    "11_google-verifiable-quantum-circuit-compilation",
+    "gemma-4-developer-agent",
+    "03_name-that-llm"
+  ],
   "schema_version": 1
 }

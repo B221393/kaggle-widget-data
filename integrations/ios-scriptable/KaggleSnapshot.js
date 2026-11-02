@@ -11,9 +11,15 @@
 // after its deadline, then drops off on its own -- nobody deletes it.
 // "visible" remains only as an exception override: visible=false hides
 // a competition immediately; a missing "visible" counts as true.
-// One competition carries "focus": true and is drawn as the large
-// chart at the top; the rest are compact lines. Moving the star is a
-// data-only change -- move the focus flag, no script update needed.
+// The star of the widget is also rule-driven: history.json carries
+// "priority_order" (competition ids, highest priority first), and
+// among the competitions currently shown, the highest-priority one
+// still before its deadline gets the large chart at the top; the
+// rest are compact lines. The star passes to the next priority the
+// moment a deadline passes, and competitions drop off a week after
+// their deadlines, all on their own. No flags are flipped by hand.
+// Inside the last 24 hours before a deadline, that competition's
+// label and lines turn a warning red.
 
 const DATA_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/reports/history.json";
 const CACHE_NAME = "KaggleSnapshot-cache.json";
@@ -49,6 +55,45 @@ function isShown(c, nowMs) {
   const dl = new Date(c.deadline).getTime();
   if (isNaN(dl)) return true;
   return nowMs < dl + GRACE_MS;
+}
+
+// Less than 24 hours left until the deadline: the competition is
+// drawn in a warning color so the final day stands out.
+const URGENT_MS = 24 * 60 * 60 * 1000;
+function isUrgent(c, nowMs) {
+  if (!c.deadline) return false;
+  const dl = new Date(c.deadline).getTime();
+  if (isNaN(dl)) return false;
+  const remain = dl - nowMs;
+  return remain >= 0 && remain < URGENT_MS;
+}
+
+// The star: the highest-priority competition among those shown
+// that is still before its deadline. A competition keeps appearing
+// for a week after its deadline (see isShown) but loses the star
+// the moment the deadline passes; the next priority takes over.
+// priorityOrder is a list of competition ids from history.json;
+// competitions not in the list are never the star while a listed
+// one is available. Fallbacks keep the layout working when every
+// shown competition is already past its deadline.
+function pickFocus(comps, priorityOrder, nowMs) {
+  if (!comps.length) return null;
+  const preDeadline = (c) => {
+    if (!c.deadline) return true;
+    const dl = new Date(c.deadline).getTime();
+    return isNaN(dl) || nowMs < dl;
+  };
+  if (Array.isArray(priorityOrder)) {
+    for (const id of priorityOrder) {
+      const hit = comps.find((c) => c.id === id && preDeadline(c));
+      if (hit) return hit;
+    }
+    for (const id of priorityOrder) {
+      const hit = comps.find((c) => c.id === id);
+      if (hit) return hit;
+    }
+  }
+  return comps[0];
 }
 // Map a value into a y pixel inside a plot box. higherIsUp=true means the
 // largest value lands on the top edge. A flat series maps to the middle.
@@ -110,13 +155,16 @@ const SCORE_COLOR = new Color("#e07b00");
 const GRID_COLOR = new Color("#d8d8de");
 const INK = new Color("#1c1c1e");
 const SUB = new Color("#6e6e73");
+const URGENT_COLOR = new Color("#d70015");
 
 // Draw one competition block (label line + chart) into ctx at y.
-// Returns the y just below the block.
-function drawComp(ctx, comp, W, y, plotH) {
+// Returns the y just below the block. Inside the last 24 hours
+// before the deadline, label and lines switch to the warning color.
+function drawComp(ctx, comp, W, y, plotH, nowMs) {
   const pts = (comp.points || []).slice().sort((a, b) => new Date(a.date) - new Date(b.date));
   const last = pts[pts.length - 1];
-  ctx.setTextColor(INK);
+  const urgent = isUrgent(comp, nowMs);
+  ctx.setTextColor(urgent ? URGENT_COLOR : INK);
   ctx.setFont(Font.boldSystemFont(11));
   let label = comp.name;
   if (comp.badge) label += `（${comp.badge}）`;
@@ -130,7 +178,7 @@ function drawComp(ctx, comp, W, y, plotH) {
     const scoreTxt = lastScored ? ` · ${fmtScore(lastScored.score)}（${fmtDelta(delta)}）` : "";
     ctx.drawText(`${last.rank}位/${comp.teams_latest || "?"}${pct}${scoreTxt}`, new Point(64, y));
   } else {
-    ctx.setTextColor(SUB);
+    ctx.setTextColor(urgent ? URGENT_COLOR : SUB);
     ctx.drawText("初回提出・採点待ち", new Point(64, y));
   }
   y += 14;
@@ -148,10 +196,10 @@ function drawComp(ctx, comp, W, y, plotH) {
     }
     // rank line (smaller rank = better = up): v=rank, higherIsUp=false
     const rankPts = pts.map((p) => ({ t: new Date(p.date).getTime(), v: p.rank }));
-    plotSeries(ctx, seriesPoints(rankPts, box, false), RANK_COLOR, 2, 2.1);
+    plotSeries(ctx, seriesPoints(rankPts, box, false), urgent ? URGENT_COLOR : RANK_COLOR, 2, 2.1);
     // score line (higher = better = up)
     const scorePts = pts.filter((p) => p.score != null).map((p) => ({ t: new Date(p.date).getTime(), v: p.score }));
-    if (scorePts.length) plotSeries(ctx, seriesPoints(scorePts, box, true), SCORE_COLOR, 1.6, 1.8);
+    if (scorePts.length) plotSeries(ctx, seriesPoints(scorePts, box, true), urgent ? URGENT_COLOR : SCORE_COLOR, 1.6, 1.8);
     // time axis labels (first / last date)
     ctx.setTextColor(SUB);
     ctx.setFont(Font.systemFont(7.5));
@@ -178,25 +226,25 @@ function plotSeries(ctx, coords, color, width, dotR) {
   }
 }
 
-function buildCanvas(comps, W, H, family) {
+function buildCanvas(comps, W, H, family, priorityOrder, nowMs) {
   const ctx = new DrawContext();
   ctx.size = new Size(W, H);
   ctx.opaque = false;
   let y = 0;
-  // Single widget, one star: the competition flagged "focus" in the
-  // data (fallback: the first entry) gets the one large chart at the
-  // top; every other competition is a compact one-line summary.
-  // Switching the star is a data-only change (move the focus flag).
-  const focus = comps.find((c) => c.focus === true) || comps[0];
+  // Single widget, one star: the highest-priority competition among
+  // those shown that is still before its deadline (see pickFocus)
+  // gets the one large chart at the top; every other competition is
+  // a compact one-line summary.
+  const focus = pickFocus(comps, priorityOrder, nowMs);
   const others = comps.filter((c) => c !== focus);
   if (focus) {
     const plotH = family === "large" ? 72 : family === "small" ? 44 : 56;
-    y = drawComp(ctx, focus, W, y, plotH);
+    y = drawComp(ctx, focus, W, y, plotH, nowMs);
   }
-  ctx.setTextColor(SUB);
   ctx.setFont(Font.systemFont(family === "small" ? 9 : 9.5));
   const maxLines = family === "small" ? 2 : others.length;
   for (const c of others.slice(0, maxLines)) {
+    ctx.setTextColor(isUrgent(c, nowMs) ? URGENT_COLOR : SUB);
     const pts = c.points || [];
     if (pts.length) {
       const l = pts[pts.length - 1];
@@ -224,17 +272,18 @@ async function buildWidget() {
     // after its deadline (visible=false overrides immediately), in
     // "order" sequence. Backward compatible: no "deadline" means
     // shown, no "order" keeps the file's relative order (stable sort).
+    const nowMs = Date.now();
     const comps = (data.competitions || [])
-      .filter((c) => isShown(c, Date.now()))
+      .filter((c) => isShown(c, nowMs))
       .slice()
-      .sort((a, b) => ((b.focus === true) - (a.focus === true)) || ((a.order != null ? a.order : 1e9) - (b.order != null ? b.order : 1e9)));
+      .sort((a, b) => (a.order != null ? a.order : 1e9) - (b.order != null ? b.order : 1e9));
     const W = family === "small" ? 148 : 330;
     const H = family === "small" ? 96 : family === "large" ? 170 : 132;
-    const img = w.addImage(buildCanvas(comps, W, H, family));
+    const img = w.addImage(buildCanvas(comps, W, H, family, data.priority_order, nowMs));
     img.imageSize = new Size(W, H);
     let latest = null;
     for (const c of comps) for (const p of c.points || []) if (!latest || p.date > latest) latest = p.date;
-    const foot = w.addText(`青=順位（上ほど改善） 橙=点数 · 記録日: ${fmtDate(latest)}${stale ? "（通信失敗・キャッシュ表示）" : ""}`);
+    const foot = w.addText(`青=順位（上ほど改善） 橙=点数 赤=締切24時間以内 · 記録日: ${fmtDate(latest)}${stale ? "（通信失敗・キャッシュ表示）" : ""}`);
     foot.font = Font.systemFont(8.5);
     foot.textColor = Color.gray();
   } catch (e) {
