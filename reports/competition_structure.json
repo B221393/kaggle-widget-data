@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "mirror_note": "Display-only extract of kaggle-lab reports/competition_structure.json. Ranks for CASMI26, QCC, name-that-llm and ARC-AGI-2 were refreshed from a Kaggle API measurement on 2026-11-02 (JST evening); all other profiles are as recorded in kaggle-lab (2026-10-23). Values are recorded snapshots, not live leaderboard values.",
+  "profiles": [
+    {
+      "id": "01_airline-satisfaction",
+      "name": "Airline Satisfaction",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T14:28:56Z",
+        "entered": true,
+        "user_rank": 11,
+        "team_count": 2805,
+        "deadline_utc": "2026-10-31T23:59:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "02_soil-grain-size-from-photos",
+      "name": "Soil Grain Size",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 108,
+        "team_count": 627,
+        "deadline_utc": "2026-11-30T11:00:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "03_name-that-llm",
+      "name": "Name That LLM",
+      "participation_snapshot": {
+        "as_of_utc": "2026-11-02T11:32:00Z",
+        "entered": true,
+        "user_rank": 1833,
+        "team_count": 4225,
+        "deadline_utc": "2027-01-14T23:59:00.817Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "04_ieee-traffic-flow-bench",
+      "name": "IEEE Traffic Flow Bench",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 129,
+        "team_count": 585,
+        "deadline_utc": "2026-11-07T06:55:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "05_arc-prize-paper-track",
+      "name": "ARC Prize Paper",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 285,
+        "deadline_utc": "2026-11-09T23:59:00Z",
+        "state": "open_no_rank_returned"
+      }
+    },
+    {
+      "id": "05_arc-prize-2026-arc-agi-2",
+      "name": "ARC AGI-2 コード資産",
+      "participation_snapshot": {
+        "as_of_utc": "2026-11-02T11:32:00Z",
+        "entered": true,
+        "user_rank": 1510,
+        "team_count": 3607,
+        "deadline_utc": "2026-11-02T23:59:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "06_nfl-big-data-bowl-2027",
+      "name": "NFL Big Data Bowl",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 374,
+        "deadline_utc": "2027-01-06T23:59:00Z",
+        "state": "open_no_rank_returned"
+      }
+    },
+    {
+      "id": "07_umud-muscle-ultrasound",
+      "name": "UMUD Muscle Ultrasound",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 54,
+        "team_count": 473,
+        "deadline_utc": "2026-11-14T23:00:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "08_filament-segmentation",
+      "name": "Filament Segmentation",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 215,
+        "team_count": 1141,
+        "deadline_utc": "2026-11-15T06:00:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "09_rsna-knee-abnormality-detection",
+      "name": "RSNA Knee（ローカル契約では終了扱い）",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": false,
+        "user_rank": 0,
+        "team_count": null,
+        "deadline_utc": null,
+        "state": "not_in_current_entered_list"
+      }
+    },
+    {
+      "id": "10_enveda-casmi26-molecule-id-mass-spectra",
+      "name": "Enveda CASMI 2026",
+      "participation_snapshot": {
+        "as_of_utc": "2026-11-02T11:32:00Z",
+        "entered": true,
+        "user_rank": 1434,
+        "team_count": 4540,
+        "deadline_utc": "2026-12-14T23:59:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "memecoins",
+      "name": "Memecoins コード資産",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 118,
+        "team_count": 238,
+        "deadline_utc": "2026-11-30T23:59:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "11_google-verifiable-quantum-circuit-compilation",
+      "name": "Google Verifiable Quantum Circuit Compilation",
+      "participation_snapshot": {
+        "as_of_utc": "2026-11-02T11:32:00Z",
+        "entered": true,
+        "user_rank": 381,
+        "team_count": 1962,
+        "deadline_utc": "2027-01-20T23:59:00Z",
+        "state": "open_no_rank_returned"
+      }
+    },
+    {
+      "id": "12_squares-in-squares",
+      "name": "Squares in Squares",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 173,
+        "team_count": 258,
+        "deadline_utc": "2027-07-18T23:59:00Z",
+        "state": "open"
+      }
+    },
+    {
+      "id": "13_misconception-detection-in-k12",
+      "name": "Misconception Detection in K-12 Student Math Workings",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 226,
+        "deadline_utc": "2026-11-17T00:00:00Z",
+        "state": "open_no_rank_returned"
+      }
+    },
+    {
+      "id": "14_climx-main-track",
+      "name": "ClimX Main Track",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 103,
+        "deadline_utc": "2026-12-15T10:59:59Z",
+        "state": "open_no_rank_returned"
+      }
+    },
+    {
+      "id": "15_3lc-low-light-detection",
+      "name": "The 3LC Low-Light Detection Challenge",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 96,
+        "deadline_utc": "2026-11-21T23:59:00Z",
+        "state": "open_no_rank_returned"
+      }
+    },
+    {
+      "id": "16_build-with-ai-smart-automation-robotics-vision",
+      "name": "Build with AI: Smart Automation, Robotics, and Vision",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 0,
+        "deadline_utc": "2026-11-14T04:59:59Z",
+        "state": "listed_but_no_teams"
+      }
+    },
+    {
+      "id": "17_pokemon-tcg-ai-battle-challenge-strategy",
+      "name": "PTCG AI Battle Challenge Strategy",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 938,
+        "deadline_utc": "2026-09-13T23:59:00Z",
+        "state": "deadline_passed"
+      }
+    },
+    {
+      "id": "18_pokemon-tcg-ai-battle-simulation",
+      "name": "PTCG AI Battle Challenge Simulation",
+      "participation_snapshot": {
+        "as_of_utc": "2026-10-23T08:17:55Z",
+        "entered": true,
+        "user_rank": 0,
+        "team_count": 6807,
+        "deadline_utc": "2026-08-31T23:59:00Z",
+        "state": "deadline_passed"
+      }
+    }
+  ]
+}

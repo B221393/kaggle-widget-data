@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "created_jst": "2026-11-02",
+  "mirror_note": "Display-only extract of kaggle-lab docs/task-queues/opencode_go_workpack.json (plan view; a state such as proposed_not_claimed does not mean running).",
+  "jobs": [
+    {
+      "id": "OCG-101",
+      "wave": "A",
+      "model": "glm-5.2",
+      "title": "M01監査の証拠を一覧化",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-102",
+      "wave": "A",
+      "model": "qwen3.8-max",
+      "title": "+0.032深度の独立検証を敵対的にレビュー",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-103",
+      "wave": "A",
+      "model": "kimi-k2.7-code",
+      "title": "v4/v5資産の対管理を静的テスト設計",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-104",
+      "wave": "A",
+      "model": "glm-5.3",
+      "title": "11月7日統合実行の事前チェックを厳格化",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-105",
+      "wave": "A",
+      "model": "glm-5.2",
+      "title": "公開weightsのNIST・ライセンス監査",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-106",
+      "wave": "A",
+      "model": "qwen3.8-max",
+      "title": "GWX非再現の機序を3案に分解",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-107",
+      "wave": "B",
+      "model": "glm-5.3",
+      "title": "不採用実験の再発防止ルールを抽出",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-108",
+      "wave": "B",
+      "model": "kimi-k2.7-code",
+      "title": "既存の相対特徴草案をレビュー",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-109",
+      "wave": "B",
+      "model": "glm-5.2",
+      "title": "候補生成coverageの独立調査設計",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-110",
+      "wave": "B",
+      "model": "glm-5.3",
+      "title": "Colab学習からKaggleへの受渡契約を整理",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-111",
+      "wave": "B",
+      "model": "qwen3.8-max",
+      "title": "Public0.480系統の改善余地を限定",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-112",
+      "wave": "B",
+      "model": "kimi-k2.7-code",
+      "title": "QCC公式scorerの境界条件テストを下書き",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-113",
+      "wave": "C",
+      "model": "glm-5.2",
+      "title": "Colab Phase2完了receiptを監査",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-114",
+      "wave": "C",
+      "model": "qwen3.8-max",
+      "title": "深度×神経モデルの相補性を分析",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-115",
+      "wave": "C",
+      "model": "glm-5.3",
+      "title": "独立新特徴の1実験を事前登録",
+      "state": "proposed_not_claimed"
+    },
+    {
+      "id": "OCG-116",
+      "wave": "C",
+      "model": "kimi-k2.7-code",
+      "title": "10分feederの連続運転障害ケースを検証設計",
+      "state": "proposed_not_claimed"
+    }
+  ]
+}
