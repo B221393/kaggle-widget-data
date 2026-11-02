@@ -1,10 +1,11 @@
 {
   "competitions": [
     {
+      "deadline": "2026-12-14T23:59:00Z",
+      "focus": true,
       "id": "10_enveda-casmi26-molecule-id-mass-spectra",
       "name": "CASMI26",
       "order": 1,
-      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -23,13 +24,14 @@
         }
       ],
       "slug": "enveda-CASMI26-molecule-id-mass-spectra",
-      "teams_latest": 4540
+      "teams_latest": 4540,
+      "visible": true
     },
     {
+      "deadline": "2027-01-20T23:59:00Z",
       "id": "11_google-verifiable-quantum-circuit-compilation",
       "name": "QCC",
       "order": 2,
-      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -63,13 +65,14 @@
         }
       ],
       "slug": "google-verifiable-quantum-circuit-compilation",
-      "teams_latest": 1962
+      "teams_latest": 1962,
+      "visible": true
     },
     {
+      "deadline": "2027-01-14T23:59:00.817Z",
       "id": "03_name-that-llm",
       "name": "Name That LLM",
       "order": 3,
-      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -88,23 +91,25 @@
         }
       ],
       "slug": "name-that-llm",
-      "teams_latest": 4225
+      "teams_latest": 4225,
+      "visible": true
     },
     {
+      "deadline": "2026-12-02T23:59:00Z",
       "id": "gemma-4-developer-agent",
       "name": "Gemma 4",
       "order": 4,
-      "visible": true,
       "points": [],
       "slug": "gemma-4-developer-agent",
-      "teams_latest": 4400
+      "teams_latest": 4400,
+      "visible": true
     },
     {
       "badge": "終了",
+      "deadline": "2026-11-02T23:59:00Z",
       "id": "05_arc-prize-2026-arc-agi-2",
       "name": "ARC-AGI-2",
       "order": 5,
-      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -123,7 +128,8 @@
         }
       ],
       "slug": "arc-prize-2026-arc-agi-2",
-      "teams_latest": 3607
+      "teams_latest": 3607,
+      "visible": true
     }
   ],
   "note": "Measured rank/score history for official-medal competitions only. Every point comes from a dated record (weekly snapshots in ~/workspace/rankings/, QCC WORKLOG, Kaggle API submission lists, 2026-11-02 evening API measurement). No interpolated or estimated points. score is the team's best public score as of that point; null when not yet scored.",

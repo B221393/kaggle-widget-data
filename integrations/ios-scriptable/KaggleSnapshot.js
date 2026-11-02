@@ -5,10 +5,15 @@
 // token needed. Values are recorded measurements, not live leaderboard
 // values. X axis is time; the blue line is rank (up = better), the
 // orange line is the best public score (up = better).
-// Which competitions are shown is controlled by the data, not by this
-// script: each entry in history.json carries "visible" (true/false) and
-// "order" (display order). Set visible=false to hide a competition
-// (e.g. after it ends); a missing "visible" counts as true.
+// Which competitions are shown is decided automatically from the data:
+// each entry in history.json carries "deadline" (UTC ISO) and "order"
+// (display order). A competition stays on the widget until one week
+// after its deadline, then drops off on its own -- nobody deletes it.
+// "visible" remains only as an exception override: visible=false hides
+// a competition immediately; a missing "visible" counts as true.
+// One competition carries "focus": true and is drawn as the large
+// chart at the top; the rest are compact lines. Moving the star is a
+// data-only change -- move the focus flag, no script update needed.
 
 const DATA_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/reports/history.json";
 const CACHE_NAME = "KaggleSnapshot-cache.json";
@@ -33,6 +38,18 @@ async function loadData() {
 }
 
 // === GEOMETRY START (pure functions, unit-tested off-device) ===
+// A competition is shown until one week after its deadline, then it
+// drops off automatically. "visible": false is an exception override
+// that hides it immediately. No deadline (or an unparseable one) means
+// it stays shown.
+const GRACE_MS = 7 * 24 * 60 * 60 * 1000;
+function isShown(c, nowMs) {
+  if (c.visible === false) return false;
+  if (!c.deadline) return true;
+  const dl = new Date(c.deadline).getTime();
+  if (isNaN(dl)) return true;
+  return nowMs < dl + GRACE_MS;
+}
 // Map a value into a y pixel inside a plot box. higherIsUp=true means the
 // largest value lands on the top edge. A flat series maps to the middle.
 function scaleY(v, min, max, top, height, higherIsUp) {
@@ -166,33 +183,28 @@ function buildCanvas(comps, W, H, family) {
   ctx.size = new Size(W, H);
   ctx.opaque = false;
   let y = 0;
-  const chartComps = comps.filter((c) => (c.points || []).length);
-  const emptyComps = comps.filter((c) => !(c.points || []).length);
-  if (family === "small") {
-    if (chartComps[0]) y = drawComp(ctx, chartComps[0], W, y, 44);
-    ctx.setTextColor(SUB);
-    ctx.setFont(Font.systemFont(9));
-    for (const c of chartComps.slice(1, 3)) {
-      const l = c.points[c.points.length - 1];
-      ctx.drawText(`${c.name}: ${l.rank}位`, new Point(0, y));
-      y += 12;
-    }
-    return ctx.getImage();
+  // Single widget, one star: the competition flagged "focus" in the
+  // data (fallback: the first entry) gets the one large chart at the
+  // top; every other competition is a compact one-line summary.
+  // Switching the star is a data-only change (move the focus flag).
+  const focus = comps.find((c) => c.focus === true) || comps[0];
+  const others = comps.filter((c) => c !== focus);
+  if (focus) {
+    const plotH = family === "large" ? 72 : family === "small" ? 44 : 56;
+    y = drawComp(ctx, focus, W, y, plotH);
   }
-  const plotH = family === "large" ? 44 : 32;
-  const chartShown = family === "large" ? chartComps : chartComps.slice(0, 2);
-  for (const c of chartShown) y = drawComp(ctx, c, W, y, plotH);
-  // compact lines for the remaining competitions
   ctx.setTextColor(SUB);
-  ctx.setFont(Font.systemFont(9.5));
-  for (const c of chartComps.slice(chartShown.length)) {
-    const l = c.points[c.points.length - 1];
-    const sc = l.score != null ? ` · ${fmtScore(l.score)}` : "";
-    ctx.drawText(`${c.name}: ${l.rank}位${sc}${c.badge ? `（${c.badge}）` : ""}`, new Point(0, y));
-    y += 12;
-  }
-  for (const c of emptyComps) {
-    ctx.drawText(`${c.name}: 初回提出・採点待ち`, new Point(0, y));
+  ctx.setFont(Font.systemFont(family === "small" ? 9 : 9.5));
+  const maxLines = family === "small" ? 2 : others.length;
+  for (const c of others.slice(0, maxLines)) {
+    const pts = c.points || [];
+    if (pts.length) {
+      const l = pts[pts.length - 1];
+      const sc = l.score != null ? ` · ${fmtScore(l.score)}` : "";
+      ctx.drawText(`${c.name}: ${l.rank}位${sc}${c.badge ? `（${c.badge}）` : ""}`, new Point(0, y));
+    } else {
+      ctx.drawText(`${c.name}: 初回提出・採点待ち`, new Point(0, y));
+    }
     y += 12;
   }
   return ctx.getImage();
@@ -208,15 +220,16 @@ async function buildWidget() {
   const family = config.widgetFamily || "medium";
   try {
     const { data, stale } = await loadData();
-    // Data-driven selection: only visible competitions, in "order"
-    // sequence. Backward compatible: no "visible" means shown, no
-    // "order" keeps the file's relative order (stable sort).
+    // Automatic selection: a competition is shown until one week
+    // after its deadline (visible=false overrides immediately), in
+    // "order" sequence. Backward compatible: no "deadline" means
+    // shown, no "order" keeps the file's relative order (stable sort).
     const comps = (data.competitions || [])
-      .filter((c) => c.visible !== false)
+      .filter((c) => isShown(c, Date.now()))
       .slice()
-      .sort((a, b) => (a.order != null ? a.order : 1e9) - (b.order != null ? b.order : 1e9));
+      .sort((a, b) => ((b.focus === true) - (a.focus === true)) || ((a.order != null ? a.order : 1e9) - (b.order != null ? b.order : 1e9)));
     const W = family === "small" ? 148 : 330;
-    const H = family === "small" ? 96 : family === "large" ? 268 : 116;
+    const H = family === "small" ? 96 : family === "large" ? 170 : 132;
     const img = w.addImage(buildCanvas(comps, W, H, family));
     img.imageSize = new Size(W, H);
     let latest = null;
