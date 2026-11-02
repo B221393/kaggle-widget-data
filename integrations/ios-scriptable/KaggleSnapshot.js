@@ -1,31 +1,43 @@
-// KaggleSnapshot (mirror edition, chart version)
+// KaggleSnapshot (mirror edition, design-driven chart version)
 // iPhone Scriptable widget: rank & score history charts for the official
 // medal competitions, drawn with DrawContext from the public read-only
 // mirror (B221393/kaggle-widget-data, reports/history.json). No GitHub
 // token needed. Values are recorded measurements, not live leaderboard
-// values. X axis is time; the blue line is rank (up = better), the
-// orange line is the best public score (up = better).
-// Which competitions are shown is decided automatically from the data:
+// values. X axis is time; one line is rank (up = better), the other is
+// the best public score (up = better).
+//
+// DISPLAY RULES (unchanged, all decided automatically from the data):
 // each entry in history.json carries "deadline" (UTC ISO) and "order"
 // (display order). A competition stays on the widget until one week
 // after its deadline, then drops off on its own -- nobody deletes it.
 // "visible" remains only as an exception override: visible=false hides
 // a competition immediately; a missing "visible" counts as true.
-// The star of the widget is also rule-driven: history.json carries
+// The star of the widget is rule-driven too: history.json carries
 // "priority_order" (competition ids, highest priority first), and
 // among the competitions currently shown, the highest-priority one
 // still before its deadline gets the large chart at the top; the
 // rest are compact lines. The star passes to the next priority the
-// moment a deadline passes, and competitions drop off a week after
-// their deadlines, all on their own. No flags are flipped by hand.
-// Inside the last 24 hours before a deadline, that competition's
-// label and lines turn a warning red.
+// moment a deadline passes. Inside the last 24 hours before a
+// deadline, that competition's label and lines turn a warning color.
+//
+// DESIGN: every visual parameter (colors, line widths, plot heights,
+// font sizes, padding, widget background) comes from
+// reports/widget_design.json on this mirror, which holds named
+// presets (dark / light / minimal) and an "active_preset". To change
+// the look, edit that file only -- this script never needs to be
+// re-pasted again. If the design file cannot be fetched, the last
+// cached copy is used, then the built-in defaults (= the dark preset).
+// THIS SCRIPT REVISION IS THE FINAL ONE: after pasting it once, all
+// future design changes are data-only.
 
 const DATA_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/reports/history.json";
+const DESIGN_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/reports/widget_design.json";
 const CACHE_NAME = "KaggleSnapshot-cache.json";
+const DESIGN_CACHE_NAME = "WidgetDesign-cache.json";
 
 const fm = FileManager.local();
 const cachePath = fm.joinPath(fm.documentsDirectory(), CACHE_NAME);
+const designCachePath = fm.joinPath(fm.documentsDirectory(), DESIGN_CACHE_NAME);
 
 async function loadData() {
   try {
@@ -42,6 +54,82 @@ async function loadData() {
     throw e;
   }
 }
+
+async function loadDesign() {
+  try {
+    const req = new Request(DESIGN_URL);
+    req.timeoutInterval = 20;
+    const json = await req.loadJSON();
+    fm.writeString(designCachePath, JSON.stringify(json));
+    return pickDesign(json);
+  } catch (e) {
+    if (fm.fileExists(designCachePath)) {
+      try {
+        return pickDesign(JSON.parse(fm.readString(designCachePath)));
+      } catch (e2) {
+        return pickDesign(null);
+      }
+    }
+    return pickDesign(null);
+  }
+}
+
+// === DESIGN START (pure functions, unit-tested off-device) ===
+// Built-in defaults: identical to the "dark" preset in
+// reports/widget_design.json. Used when the design file is missing
+// or invalid, so the widget always renders.
+const DEFAULT_DESIGN = {
+  background: "#0e1116",
+  ink: "#f0f3f7",
+  sub: "#9aa5b1",
+  grid: "#242b34",
+  footer: "#76808d",
+  rank_line: "#5ea9ff",
+  score_line: "#ffb340",
+  urgent: "#ff5147",
+  accent: "#5ea9ff",
+  track: "#242b34",
+  tick: "#4d5764",
+  chip_done: "#34c77b",
+  chip_active: "#5ea9ff",
+  chip_held: "#ffd60a",
+  chip_pending: "#8b95a3",
+  show_grid: true,
+  title_size: 13,
+  label_size: 11.5,
+  value_size: 10.5,
+  axis_size: 7.5,
+  compact_size: 9.5,
+  footer_size: 8.5,
+  info_size: 10,
+  now_size: 15,
+  pct_size: 30,
+  plot_height_small: 44,
+  plot_height_medium: 58,
+  plot_height_large: 76,
+  rank_line_width: 2.4,
+  score_line_width: 2.0,
+  bar_height: 14,
+  padding_top: 12,
+  padding_left: 14,
+  padding_bottom: 10,
+  padding_right: 14,
+};
+
+// Resolve a widget_design.json document into one flat design object:
+// presets[active_preset] merged over the built-in defaults. Any
+// missing or invalid input resolves to the defaults.
+function pickDesign(json) {
+  const d = Object.assign({}, DEFAULT_DESIGN);
+  if (!json || typeof json !== "object") return d;
+  const presets = json.presets;
+  if (!presets || typeof presets !== "object") return d;
+  const name = typeof json.active_preset === "string" ? json.active_preset : "dark";
+  const p = presets[name] && typeof presets[name] === "object" ? presets[name] : presets.dark;
+  if (!p || typeof p !== "object") return d;
+  return Object.assign(d, p);
+}
+// === DESIGN END ===
 
 // === GEOMETRY START (pure functions, unit-tested off-device) ===
 // A competition is shown until one week after its deadline, then it
@@ -150,26 +238,31 @@ function fmtDate(iso) {
   return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`;
 }
 
-const RANK_COLOR = new Color("#2563eb");
-const SCORE_COLOR = new Color("#e07b00");
-const GRID_COLOR = new Color("#d8d8de");
-const INK = new Color("#1c1c1e");
-const SUB = new Color("#6e6e73");
-const URGENT_COLOR = new Color("#d70015");
+function col(hex, fallbackHex) {
+  try {
+    return new Color(hex);
+  } catch (e) {
+    return new Color(fallbackHex);
+  }
+}
 
 // Draw one competition block (label line + chart) into ctx at y.
 // Returns the y just below the block. Inside the last 24 hours
 // before the deadline, label and lines switch to the warning color.
-function drawComp(ctx, comp, W, y, plotH, nowMs) {
+// All colors and sizes come from the design object d.
+function drawComp(ctx, comp, W, y, plotH, nowMs, d) {
+  const ink = col(d.ink, "#f0f3f7");
+  const sub = col(d.sub, "#9aa5b1");
+  const urgentCol = col(d.urgent, "#ff5147");
   const pts = (comp.points || []).slice().sort((a, b) => new Date(a.date) - new Date(b.date));
   const last = pts[pts.length - 1];
   const urgent = isUrgent(comp, nowMs);
-  ctx.setTextColor(urgent ? URGENT_COLOR : INK);
-  ctx.setFont(Font.boldSystemFont(11));
+  ctx.setTextColor(urgent ? urgentCol : ink);
+  ctx.setFont(Font.boldSystemFont(d.label_size));
   let label = comp.name;
   if (comp.badge) label += `（${comp.badge}）`;
   ctx.drawText(label, new Point(0, y));
-  ctx.setFont(Font.systemFont(10.5));
+  ctx.setFont(Font.systemFont(d.value_size));
   if (last) {
     const pct = comp.teams_latest ? ` 上位${((last.rank / comp.teams_latest) * 100).toFixed(1)}%` : "";
     const first = pts.find((p) => p.score != null);
@@ -178,31 +271,33 @@ function drawComp(ctx, comp, W, y, plotH, nowMs) {
     const scoreTxt = lastScored ? ` · ${fmtScore(lastScored.score)}（${fmtDelta(delta)}）` : "";
     ctx.drawText(`${last.rank}位/${comp.teams_latest || "?"}${pct}${scoreTxt}`, new Point(64, y));
   } else {
-    ctx.setTextColor(urgent ? URGENT_COLOR : SUB);
+    ctx.setTextColor(urgent ? urgentCol : sub);
     ctx.drawText("初回提出・採点待ち", new Point(64, y));
   }
   y += 14;
   if (pts.length) {
     const box = { x: 2, y, w: W - 4, h: plotH };
-    // grid: top / middle / bottom hairlines
-    ctx.setStrokeColor(GRID_COLOR);
-    ctx.setLineWidth(0.6);
-    for (const gy of [box.y + 0.5, box.y + box.h / 2, box.y + box.h - 0.5]) {
-      const g = new Path();
-      g.move(new Point(box.x, gy));
-      g.addLine(new Point(box.x + box.w, gy));
-      ctx.addPath(g);
-      ctx.strokePath();
+    if (d.show_grid !== false) {
+      // grid: top / middle / bottom hairlines
+      ctx.setStrokeColor(col(d.grid, "#242b34"));
+      ctx.setLineWidth(0.6);
+      for (const gy of [box.y + 0.5, box.y + box.h / 2, box.y + box.h - 0.5]) {
+        const g = new Path();
+        g.move(new Point(box.x, gy));
+        g.addLine(new Point(box.x + box.w, gy));
+        ctx.addPath(g);
+        ctx.strokePath();
+      }
     }
     // rank line (smaller rank = better = up): v=rank, higherIsUp=false
     const rankPts = pts.map((p) => ({ t: new Date(p.date).getTime(), v: p.rank }));
-    plotSeries(ctx, seriesPoints(rankPts, box, false), urgent ? URGENT_COLOR : RANK_COLOR, 2, 2.1);
+    plotSeries(ctx, seriesPoints(rankPts, box, false), urgent ? urgentCol : col(d.rank_line, "#5ea9ff"), d.rank_line_width, 2.1);
     // score line (higher = better = up)
     const scorePts = pts.filter((p) => p.score != null).map((p) => ({ t: new Date(p.date).getTime(), v: p.score }));
-    if (scorePts.length) plotSeries(ctx, seriesPoints(scorePts, box, true), urgent ? URGENT_COLOR : SCORE_COLOR, 1.6, 1.8);
+    if (scorePts.length) plotSeries(ctx, seriesPoints(scorePts, box, true), urgent ? urgentCol : col(d.score_line, "#ffb340"), d.score_line_width, 1.8);
     // time axis labels (first / last date)
-    ctx.setTextColor(SUB);
-    ctx.setFont(Font.systemFont(7.5));
+    ctx.setTextColor(sub);
+    ctx.setFont(Font.systemFont(d.axis_size));
     ctx.drawText(fmtMD(pts[0].date), new Point(box.x, box.y + box.h + 1));
     const lastLabel = fmtMD(last.date);
     ctx.drawText(lastLabel, new Point(box.x + box.w - 24, box.y + box.h + 1));
@@ -226,7 +321,7 @@ function plotSeries(ctx, coords, color, width, dotR) {
   }
 }
 
-function buildCanvas(comps, W, H, family, priorityOrder, nowMs) {
+function buildCanvas(comps, W, H, family, priorityOrder, nowMs, d) {
   const ctx = new DrawContext();
   ctx.size = new Size(W, H);
   ctx.opaque = false;
@@ -238,13 +333,13 @@ function buildCanvas(comps, W, H, family, priorityOrder, nowMs) {
   const focus = pickFocus(comps, priorityOrder, nowMs);
   const others = comps.filter((c) => c !== focus);
   if (focus) {
-    const plotH = family === "large" ? 72 : family === "small" ? 44 : 56;
-    y = drawComp(ctx, focus, W, y, plotH, nowMs);
+    const plotH = family === "large" ? d.plot_height_large : family === "small" ? d.plot_height_small : d.plot_height_medium;
+    y = drawComp(ctx, focus, W, y, plotH, nowMs, d);
   }
-  ctx.setFont(Font.systemFont(family === "small" ? 9 : 9.5));
+  ctx.setFont(Font.systemFont(family === "small" ? 9 : d.compact_size));
   const maxLines = family === "small" ? 2 : others.length;
   for (const c of others.slice(0, maxLines)) {
-    ctx.setTextColor(isUrgent(c, nowMs) ? URGENT_COLOR : SUB);
+    ctx.setTextColor(isUrgent(c, nowMs) ? col(d.urgent, "#ff5147") : col(d.sub, "#9aa5b1"));
     const pts = c.points || [];
     if (pts.length) {
       const l = pts[pts.length - 1];
@@ -259,10 +354,13 @@ function buildCanvas(comps, W, H, family, priorityOrder, nowMs) {
 }
 
 async function buildWidget() {
+  const d = await loadDesign();
   const w = new ListWidget();
-  w.setPadding(10, 12, 8, 12);
+  w.backgroundColor = col(d.background, "#0e1116");
+  w.setPadding(d.padding_top, d.padding_left, d.padding_bottom, d.padding_right);
   const title = w.addText("Kaggle メダル戦線（記録値）");
-  title.font = Font.boldSystemFont(13);
+  title.font = Font.boldSystemFont(d.title_size);
+  title.textColor = col(d.ink, "#f0f3f7");
   w.addSpacer(4);
 
   const family = config.widgetFamily || "medium";
@@ -278,18 +376,22 @@ async function buildWidget() {
       .slice()
       .sort((a, b) => (a.order != null ? a.order : 1e9) - (b.order != null ? b.order : 1e9));
     const W = family === "small" ? 148 : 330;
-    const H = family === "small" ? 96 : family === "large" ? 170 : 132;
-    const img = w.addImage(buildCanvas(comps, W, H, family, data.priority_order, nowMs));
+    const plotH = family === "large" ? d.plot_height_large : family === "small" ? d.plot_height_small : d.plot_height_medium;
+    const focus = pickFocus(comps, data.priority_order, nowMs);
+    const otherCount = comps.filter((c) => c !== focus).length;
+    const shownOthers = family === "small" ? Math.min(2, otherCount) : otherCount;
+    const H = (focus ? 14 + plotH + 10 : 0) + shownOthers * 12 + 4;
+    const img = w.addImage(buildCanvas(comps, W, H, family, data.priority_order, nowMs, d));
     img.imageSize = new Size(W, H);
     let latest = null;
     for (const c of comps) for (const p of c.points || []) if (!latest || p.date > latest) latest = p.date;
-    const foot = w.addText(`青=順位（上ほど改善） 橙=点数 赤=締切24時間以内 · 記録日: ${fmtDate(latest)}${stale ? "（通信失敗・キャッシュ表示）" : ""}`);
-    foot.font = Font.systemFont(8.5);
-    foot.textColor = Color.gray();
+    const foot = w.addText(`順位と点数（上ほど改善） · 警告色=締切24時間以内 · 記録日: ${fmtDate(latest)}${stale ? "（通信失敗・キャッシュ表示）" : ""}`);
+    foot.font = Font.systemFont(d.footer_size);
+    foot.textColor = col(d.footer, "#76808d");
   } catch (e) {
     const err = w.addText("取得に失敗しました");
     err.font = Font.systemFont(11);
-    err.textColor = Color.red();
+    err.textColor = col(d.urgent, "#ff5147");
   }
   return w;
 }
