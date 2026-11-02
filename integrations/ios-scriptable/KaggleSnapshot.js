@@ -5,6 +5,10 @@
 // token needed. Values are recorded measurements, not live leaderboard
 // values. X axis is time; the blue line is rank (up = better), the
 // orange line is the best public score (up = better).
+// Which competitions are shown is controlled by the data, not by this
+// script: each entry in history.json carries "visible" (true/false) and
+// "order" (display order). Set visible=false to hide a competition
+// (e.g. after it ends); a missing "visible" counts as true.
 
 const DATA_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/reports/history.json";
 const CACHE_NAME = "KaggleSnapshot-cache.json";
@@ -204,7 +208,13 @@ async function buildWidget() {
   const family = config.widgetFamily || "medium";
   try {
     const { data, stale } = await loadData();
-    const comps = data.competitions || [];
+    // Data-driven selection: only visible competitions, in "order"
+    // sequence. Backward compatible: no "visible" means shown, no
+    // "order" keeps the file's relative order (stable sort).
+    const comps = (data.competitions || [])
+      .filter((c) => c.visible !== false)
+      .slice()
+      .sort((a, b) => (a.order != null ? a.order : 1e9) - (b.order != null ? b.order : 1e9));
     const W = family === "small" ? 148 : 330;
     const H = family === "small" ? 96 : family === "large" ? 268 : 116;
     const img = w.addImage(buildCanvas(comps, W, H, family));

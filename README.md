@@ -28,6 +28,7 @@ iPhone 用 Scriptable ウィジェット（Kaggle 順位・OpenCode Go 提案ジ
 
 - ミラー版は、for-agent.md 側の正本スクリプトと表示契約を揃え、取得方法だけを「private リポ＋トークン」から「このミラーの raw URL（認証なし）」に変えたものです。
 - `KaggleSnapshot` は `history.json` を読み、順位（青・上ほど改善）と点数（橙）の推移を横軸=時間の折れ線で描きます。CASMI を先頭に大きく表示します。
+- 表示するコンペの追加・削除は、スクリプトではなく `history.json` の各コンペの `visible`（true/false）と `order`（表示順）で制御します。終了したコンペは `visible: false` にすれば非表示になり、新しいコンペは項目を追加して `visible: true` にすれば表示されます。スクリプトの再配布は不要です。
 - `OpenCodeWorkpack` は jobs の state から進捗率を計算し、0–100% の横バーと大きな % で表示します（計画表示である明示つき）。
 - 通信失敗時は、最後に取得できた内容をキャッシュ表示し、その旨を表示します。
 - 個人タスク用 `PersonalTasks` は iPhone ローカル完結で、このミラーは使いません（従来どおり for-agent.md の案内から導入してください）。

@@ -3,6 +3,8 @@
     {
       "id": "10_enveda-casmi26-molecule-id-mass-spectra",
       "name": "CASMI26",
+      "order": 1,
+      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -26,6 +28,8 @@
     {
       "id": "11_google-verifiable-quantum-circuit-compilation",
       "name": "QCC",
+      "order": 2,
+      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -64,6 +68,8 @@
     {
       "id": "03_name-that-llm",
       "name": "Name That LLM",
+      "order": 3,
+      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
@@ -87,6 +93,8 @@
     {
       "id": "gemma-4-developer-agent",
       "name": "Gemma 4",
+      "order": 4,
+      "visible": true,
       "points": [],
       "slug": "gemma-4-developer-agent",
       "teams_latest": 4400
@@ -95,6 +103,8 @@
       "badge": "終了",
       "id": "05_arc-prize-2026-arc-agi-2",
       "name": "ARC-AGI-2",
+      "order": 5,
+      "visible": true,
       "points": [
         {
           "date": "2026-10-31T17:30+09:00",
