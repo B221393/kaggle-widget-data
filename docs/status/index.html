@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaggle 現状ボード</title>
+<style>
+  :root { --bg:#0f1115; --card:#1a1d24; --text:#e8eaed; --sub:#9aa0a6; --accent:#7ab8ff; --warn:#ff9d5c; --danger:#ff6b6b; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; }
+  .hero { background: var(--card); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+  .hero h1 { font-size: 28px; margin: 0 0 8px; }
+  .hero .big { font-size: 44px; font-weight: 700; color: var(--accent); }
+  .cards { display: grid; gap: 12px; }
+  .card { background: var(--card); border-radius: 12px; padding: 16px; }
+  .card h2 { font-size: 18px; margin: 0 0 6px; }
+  .card .score { font-size: 26px; font-weight: 700; }
+  .sub { color: var(--sub); font-size: 14px; }
+  .warn { color: var(--warn); font-weight: 700; }
+  .danger { color: var(--danger); font-weight: 700; }
+  footer { color: var(--sub); font-size: 13px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <h1>いまの主戦場: Gemma 4 Developer Agent</h1>
+    <div class="big">0.17</div>
+    <p class="sub">現在の最良スコア（公式 Public、確定済み）。提出は1日1件まで。締切は 2026-12-03。目標は 0.2 以上です。</p>
+    <p>今日の作業: 改善版 v7 を提出済みで採点待ちです。採点が確定したら次の変種 v8 を提出します。公開レシピの取り込みで 0.22〜0.24 の同点帯を狙います。</p>
+  </section>
+  <section class="cards">
+    <article class="card">
+      <h2>CASMI26（分子同定）</h2>
+      <p class="score">0.481</p>
+      <p class="sub">最良スコア（公式 Public、確定済み）。締切は 2026-12-14。最優先の対象です。</p>
+    </article>
+    <article class="card">
+      <h2>Google Quantum AI（量子回路コンパイル）</h2>
+      <p class="score">25.14770</p>
+      <p class="sub">最良スコア（公式 Public、確定済み）。締切は 2027-01-20。</p>
+    </article>
+    <article class="card">
+      <h2>name-that-llm</h2>
+      <p class="score">0.594</p>
+      <p class="sub">最良スコア（公式 Public、確定済み）。締切は 2027-01-14。本格化は 2026-12-14 以降の計画です。</p>
+    </article>
+    <article class="card">
+      <h2>IEEE traffic（終了）</h2>
+      <p class="score">0.87141</p>
+      <p class="sub">最終スコアとして確定済みです。</p>
+    </article>
+    <article class="card">
+      <h2>ARC-AGI-2（終了）</h2>
+      <p class="score">30.14</p>
+      <p class="sub">最終スコアとして確定済みです。</p>
+    </article>
+  </section>
+  <footer>出典: Kaggle 公式提出記録（確定済みスコアのみを掲載） / 更新: 2026-11-09 21:00 JST</footer>
+</main>
+</body>
+</html>
