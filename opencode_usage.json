@@ -1,13 +1,13 @@
 {
   "month": "2026-11",
-  "updated_at": "2026-11-09T21:12:05+09:00",
+  "updated_at": "2026-11-09T21:28:30+09:00",
   "models": [
     {
       "id": "deepseek-v4.1-flash",
       "label": "DeepSeek V4.1 Flash",
-      "spent_usd": 0.3421,
+      "spent_usd": 0.3506,
       "quota_usd": 100,
-      "left_pct": 99.7,
+      "left_pct": 99.6,
       "main": true
     },
     {
