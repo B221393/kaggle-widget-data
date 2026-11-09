@@ -1,0 +1,38 @@
+{
+  "month": "2026-11",
+  "updated_at": "2026-11-09T16:36:02+09:00",
+  "models": [
+    {
+      "id": "deepseek-v4.1-flash",
+      "label": "DeepSeek V4.1 Flash",
+      "spent_usd": 0.2993,
+      "quota_usd": 100,
+      "left_pct": 99.7,
+      "main": true
+    },
+    {
+      "id": "glm-5.3-flash",
+      "label": "GLM-5.3 Flash",
+      "spent_usd": 0.0737,
+      "quota_usd": 60,
+      "left_pct": 99.9,
+      "main": false
+    },
+    {
+      "id": "qwen3.8-max",
+      "label": "Qwen3.8 Max",
+      "spent_usd": 0.7131,
+      "quota_usd": 15,
+      "left_pct": 95.2,
+      "main": false
+    },
+    {
+      "id": "kimi-k2.7-code",
+      "label": "Kimi K2.7 Code",
+      "spent_usd": 0.702,
+      "quota_usd": 60,
+      "left_pct": 98.8,
+      "main": false
+    }
+  ]
+}

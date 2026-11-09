@@ -11,6 +11,12 @@
 // Job names shown are the short plain-language "label" fields in the
 // data file, so wording can be adjusted on the data side only.
 //
+// USAGE: below the plan progress, a usage block in the Muse usage
+// widget style (big "% left" + thick rounded bar) shows the OpenCode
+// Go spend for the current month per model, from
+// opencode_usage.json on this mirror (regenerated from the local
+// usage log by Muse; quotas are the recorded monthly caps).
+//
 // DESIGN: shared with KaggleSnapshot. Every visual parameter
 // (background, text, bar and state-chip colors, sizes, padding)
 // comes from reports/widget_design.json on this mirror (presets:
@@ -18,17 +24,22 @@
 // look for BOTH widgets, edit that file only -- this script never
 // needs to be re-pasted again. If the design file cannot be fetched,
 // the last cached copy is used, then the built-in defaults (= the
-// dark preset). THIS SCRIPT REVISION IS THE FINAL ONE: after
+// dark preset). REVISED 2026-11-09: usage block added and built-in
+// defaults synced to the current dark preset. After pasting this
+// revision once, future design changes are data-only again: after
 // pasting it once, all future design changes are data-only.
 
 const DATA_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/docs/task-queues/opencode_go_workpack.json";
 const DESIGN_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/reports/widget_design.json";
+const USAGE_URL = "https://raw.githubusercontent.com/B221393/kaggle-widget-data/main/opencode_usage.json";
+const USAGE_CACHE_NAME = "OpenCodeUsage-cache.json";
 const CACHE_NAME = "OpenCodeWorkpack-cache.json";
 const DESIGN_CACHE_NAME = "WidgetDesign-cache.json";
 
 const fm = FileManager.local();
 const cachePath = fm.joinPath(fm.documentsDirectory(), CACHE_NAME);
 const designCachePath = fm.joinPath(fm.documentsDirectory(), DESIGN_CACHE_NAME);
+const usageCachePath = fm.joinPath(fm.documentsDirectory(), USAGE_CACHE_NAME);
 
 async function loadData() {
   try {
@@ -70,37 +81,37 @@ async function loadDesign() {
 // reports/widget_design.json (shared with KaggleSnapshot). Used
 // when the design file is missing or invalid.
 const DEFAULT_DESIGN = {
-  background: "#0e1116",
-  ink: "#f0f3f7",
-  sub: "#9aa5b1",
-  grid: "#242b34",
-  footer: "#76808d",
+  background: "#242428",
+  ink: "#ffffff",
+  sub: "#9d9da6",
+  grid: "#38383d",
+  footer: "#8e8e93",
   rank_line: "#5ea9ff",
-  score_line: "#ffb340",
-  urgent: "#ff5147",
-  accent: "#5ea9ff",
-  track: "#242b34",
-  tick: "#4d5764",
-  chip_done: "#34c77b",
-  chip_active: "#5ea9ff",
+  score_line: "#ff9f0a",
+  urgent: "#ff453a",
+  accent: "#8b5cf6",
+  track: "#38383d",
+  tick: "#55555c",
+  chip_done: "#30d158",
+  chip_active: "#8b5cf6",
   chip_held: "#ffd60a",
-  chip_pending: "#8b95a3",
+  chip_pending: "#98989f",
   show_grid: true,
-  title_size: 13,
-  label_size: 11.5,
-  value_size: 10.5,
-  axis_size: 7.5,
-  compact_size: 9.5,
-  footer_size: 8.5,
-  info_size: 10,
-  now_size: 15,
+  title_size: 15,
+  label_size: 13.5,
+  value_size: 12.5,
+  axis_size: 9,
+  compact_size: 11,
+  footer_size: 9.5,
+  info_size: 11.5,
+  now_size: 17,
   pct_size: 30,
-  plot_height_small: 44,
-  plot_height_medium: 58,
-  plot_height_large: 76,
-  rank_line_width: 2.4,
-  score_line_width: 2.0,
-  bar_height: 14,
+  plot_height_small: 50,
+  plot_height_medium: 66,
+  plot_height_large: 84,
+  rank_line_width: 3.6,
+  score_line_width: 3.0,
+  bar_height: 18,
   padding_top: 12,
   padding_left: 14,
   padding_bottom: 10,
@@ -208,6 +219,44 @@ function col(hex, fallbackHex) {
   } catch (e) {
     return new Color(fallbackHex);
   }
+}
+
+async function loadUsage() {
+  try {
+    const req = new Request(USAGE_URL);
+    req.timeoutInterval = 20;
+    const json = await req.loadJSON();
+    fm.writeString(usageCachePath, JSON.stringify(json));
+    return json;
+  } catch (e) {
+    if (fm.fileExists(usageCachePath)) {
+      try { return JSON.parse(fm.readString(usageCachePath)); } catch (e2) { return null; }
+    }
+    return null;
+  }
+}
+
+// Thick rounded bar in the Muse usage widget style (no tick labels).
+function buildUsageBar(pct, W, d) {
+  const H = d.bar_height + 4;
+  const ctx = new DrawContext();
+  ctx.size = new Size(W, H);
+  ctx.opaque = false;
+  ctx.respectScreenScale = true;
+  const trackW = W - 2;
+  const r = d.bar_height / 2;
+  const trackPath = new Path();
+  trackPath.addRoundedRect(new Rect(1, 2, trackW, d.bar_height), r, r);
+  ctx.addPath(trackPath);
+  ctx.setFillColor(col(d.track, "#38383d"));
+  ctx.fillPath();
+  const fw = Math.max(d.bar_height, Math.min(trackW, (trackW * pct) / 100));
+  const fillPath = new Path();
+  fillPath.addRoundedRect(new Rect(1, 2, fw, d.bar_height), r, r);
+  ctx.addPath(fillPath);
+  ctx.setFillColor(col(d.accent, "#8b5cf6"));
+  ctx.fillPath();
+  return { img: ctx.getImage(), h: H };
 }
 
 function buildBar(pct, W, d) {
@@ -331,6 +380,35 @@ async function buildWidget() {
     brk.font = Font.systemFont(d.info_size);
     brk.textColor = sub;
     w.addSpacer(3);
+
+    // --- 使用量（OpenCode Go、今月） ---
+    const usage = await loadUsage();
+    if (usage && Array.isArray(usage.models) && usage.models.length) {
+      w.addSpacer(6);
+      const monthNum = usage.month ? Number(String(usage.month).split("-")[1]) : null;
+      const headUsage = w.addText(monthNum ? `使用量（${monthNum}月）` : "使用量");
+      headUsage.font = Font.boldSystemFont(10.5);
+      headUsage.textColor = col(d.accent, "#8b5cf6");
+      const main = usage.models.find((m) => m.main) || usage.models[0];
+      const mainLabel = w.addText(main.label);
+      mainLabel.font = Font.systemFont(d.info_size);
+      mainLabel.textColor = sub;
+      const mainLeft = w.addText(`${main.left_pct}% left`);
+      mainLeft.font = Font.boldSystemFont(24);
+      mainLeft.textColor = ink;
+      const ubar = buildUsageBar(main.left_pct, W, d);
+      const ubarImg = w.addImage(ubar.img);
+      ubarImg.imageSize = new Size(W, ubar.h);
+      const mainCost = w.addText(`$${Number(main.spent_usd).toFixed(2)} / $${main.quota_usd}`);
+      mainCost.font = Font.systemFont(d.info_size);
+      mainCost.textColor = sub;
+      for (const m of usage.models) {
+        if (m === main) continue;
+        const line = w.addText(`${m.label}: 残り ${m.left_pct}%（$${Number(m.spent_usd).toFixed(2)} / $${m.quota_usd}）`);
+        line.font = Font.systemFont(d.info_size);
+        line.textColor = sub;
+      }
+    }
 
     const foot = w.addText(`計画表示（提案は実行中ではありません） · 計画作成: ${data.created_jst || "不明"}${stale ? "（通信失敗・キャッシュ表示）" : ""}`);
     foot.font = Font.systemFont(d.footer_size);
