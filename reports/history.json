@@ -20,10 +20,15 @@
           "date": "2026-11-02T20:32+09:00",
           "rank": 1434,
           "score": 0.456
+        },
+        {
+          "date": "2026-11-09T09:54+09:00",
+          "rank": 1543,
+          "score": 0.468
         }
       ],
       "slug": "enveda-CASMI26-molecule-id-mass-spectra",
-      "teams_latest": 4540,
+      "teams_latest": 4993,
       "visible": true
     },
     {
@@ -61,10 +66,15 @@
           "date": "2026-11-02T20:32+09:00",
           "rank": 381,
           "score": 23.9468
+        },
+        {
+          "date": "2026-11-09T09:54+09:00",
+          "rank": 288,
+          "score": 25.1477
         }
       ],
       "slug": "google-verifiable-quantum-circuit-compilation",
-      "teams_latest": 1962,
+      "teams_latest": 2660,
       "visible": true
     },
     {
@@ -87,10 +97,15 @@
           "date": "2026-11-02T20:32+09:00",
           "rank": 1833,
           "score": 0.594
+        },
+        {
+          "date": "2026-11-09T09:54+09:00",
+          "rank": 2519,
+          "score": 0.594
         }
       ],
       "slug": "name-that-llm",
-      "teams_latest": 4225,
+      "teams_latest": 5181,
       "visible": true
     },
     {
@@ -98,9 +113,15 @@
       "id": "gemma-4-developer-agent",
       "name": "Gemma 4",
       "order": 4,
-      "points": [],
+      "points": [
+        {
+          "date": "2026-11-09T09:54+09:00",
+          "rank": 2270,
+          "score": 0.17
+        }
+      ],
       "slug": "gemma-4-developer-agent",
-      "teams_latest": 4400,
+      "teams_latest": 5147,
       "visible": true
     },
     {
@@ -124,10 +145,15 @@
           "date": "2026-11-02T20:32+09:00",
           "rank": 1510,
           "score": 30.14
+        },
+        {
+          "date": "2026-11-09T09:54+09:00",
+          "rank": 1475,
+          "score": 30.14
         }
       ],
       "slug": "arc-prize-2026-arc-agi-2",
-      "teams_latest": 3607,
+      "teams_latest": 3543,
       "visible": true
     }
   ],

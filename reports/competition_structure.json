@@ -30,10 +30,10 @@
       "id": "03_name-that-llm",
       "name": "Name That LLM",
       "participation_snapshot": {
-        "as_of_utc": "2026-11-02T11:32:00Z",
+        "as_of_utc": "2026-11-09T00:54:31Z",
         "entered": true,
-        "user_rank": 1833,
-        "team_count": 4225,
+        "user_rank": 2519,
+        "team_count": 5181,
         "deadline_utc": "2027-01-14T23:59:00.817Z",
         "state": "open"
       }
@@ -66,10 +66,10 @@
       "id": "05_arc-prize-2026-arc-agi-2",
       "name": "ARC AGI-2 コード資産",
       "participation_snapshot": {
-        "as_of_utc": "2026-11-02T11:32:00Z",
+        "as_of_utc": "2026-11-09T00:54:31Z",
         "entered": true,
-        "user_rank": 1510,
-        "team_count": 3607,
+        "user_rank": 1475,
+        "team_count": 3543,
         "deadline_utc": "2026-11-02T23:59:00Z",
         "state": "open"
       }
@@ -126,10 +126,10 @@
       "id": "10_enveda-casmi26-molecule-id-mass-spectra",
       "name": "Enveda CASMI 2026",
       "participation_snapshot": {
-        "as_of_utc": "2026-11-02T11:32:00Z",
+        "as_of_utc": "2026-11-09T00:54:31Z",
         "entered": true,
-        "user_rank": 1434,
-        "team_count": 4540,
+        "user_rank": 1543,
+        "team_count": 4993,
         "deadline_utc": "2026-12-14T23:59:00Z",
         "state": "open"
       }
@@ -150,10 +150,10 @@
       "id": "11_google-verifiable-quantum-circuit-compilation",
       "name": "Google Verifiable Quantum Circuit Compilation",
       "participation_snapshot": {
-        "as_of_utc": "2026-11-02T11:32:00Z",
+        "as_of_utc": "2026-11-09T00:54:31Z",
         "entered": true,
-        "user_rank": 381,
-        "team_count": 1962,
+        "user_rank": 288,
+        "team_count": 2660,
         "deadline_utc": "2027-01-20T23:59:00Z",
         "state": "open_no_rank_returned"
       }
